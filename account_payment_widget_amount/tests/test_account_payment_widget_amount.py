@@ -8,7 +8,7 @@ from odoo.tests.common import TransactionCase
 
 class TestAccountPaymentWidgetAmount(TransactionCase):
     def setUp(self):
-        super(TestAccountPaymentWidgetAmount, self).setUp()
+        super().setUp()
         # Models
         self.partner = self.env["res.partner"].create({"name": "Test"})
         self.account_account_model = self.env["account.account"]
@@ -140,7 +140,7 @@ class TestAccountPaymentWidgetAmount(TransactionCase):
         )
         payment.action_post()
         payment_ml = payment.line_ids.filtered(
-            lambda l: l.account_id == self.account_receivable
+            lambda line: line.account_id == self.account_receivable
         )
         invoice.with_context(paid_amount=100.0).js_assign_outstanding_line(
             payment_ml.id
@@ -209,7 +209,7 @@ class TestAccountPaymentWidgetAmount(TransactionCase):
         )
         payment.action_post()
         payment_ml = payment.line_ids.filtered(
-            lambda l: l.account_id == self.account_receivable
+            lambda line: line.account_id == self.account_receivable
         )
         # We pay 100 in the currency of the invoice. Which means that in
         # company currency we are paying 50.
@@ -276,7 +276,7 @@ class TestAccountPaymentWidgetAmount(TransactionCase):
         )
         payment.action_post()
         payment_ml = payment.line_ids.filtered(
-            lambda l: l.account_id == self.account_receivable
+            lambda line: line.account_id == self.account_receivable
         )
         # We collect 100 in the currency of the refund. Which means that in
         # company currency we are reconciling 50.
@@ -342,7 +342,7 @@ class TestAccountPaymentWidgetAmount(TransactionCase):
         )
         payment.action_post()
         payment_ml = payment.line_ids.filtered(
-            lambda l: l.account_id == self.account_receivable
+            lambda line: line.account_id == self.account_receivable
         )
         # We pay 100 in the currency of the invoice, which is the
         # company currency
@@ -415,7 +415,7 @@ class TestAccountPaymentWidgetAmount(TransactionCase):
         )
         payment.action_post()
         payment_ml = payment.line_ids.filtered(
-            lambda l: l.account_id == self.account_payable
+            lambda line: line.account_id == self.account_payable
         )
         invoice.with_context(paid_amount=100.0).js_assign_outstanding_line(
             payment_ml.id
