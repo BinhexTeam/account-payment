@@ -17,22 +17,23 @@ Interactive Partner Aging at any date
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--payment-lightgray.png?logo=github
-    :target: https://github.com/OCA/account-payment/tree/16.0/partner_aging
+    :target: https://github.com/OCA/account-payment/tree/17.0/partner_aging
     :alt: OCA/account-payment
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/account-payment-16-0/account-payment-16-0-partner_aging
+    :target: https://translation.odoo-community.org/projects/account-payment-17-0/account-payment-17-0-partner_aging
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-payment&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-payment&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module creates a new customer / supplier aging report as of a given date.
+This module creates a new customer / supplier aging report as of a given
+date.
 
-The default Aged Partner balance report is related to a specific date and a
-static PDF that is based on the difference between credits and debits, not
-based on documents such as Invoices/Bills and Payments.
+The default Aged Partner balance report is related to a specific date
+and a static PDF that is based on the difference between credits and
+debits, not based on documents such as Invoices/Bills and Payments.
 
 This module provides an interactive view with details of the invoice.
 
@@ -48,9 +49,9 @@ Usage
 
 To use this module, you need to:
 
-#. Go to Accounting
-#. Click on Sales > Customer Aging or Purchases > Supplier Aging
-#. Change the date if necessary
+1. Go to Accounting
+2. Click on Sales > Customer Aging or Purchases > Supplier Aging
+3. Change the date if necessary
 
 Bug Tracker
 ===========
@@ -58,7 +59,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-payment/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/account-payment/issues/new?body=module:%20partner_aging%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/account-payment/issues/new?body=module:%20partner_aging%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -66,33 +67,33 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Open Source Integrators
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Bhavesh Odedra <bodedra@opensourceintegrators.com>
-* Balaji Kannan <bkannan@opensourceintegrators.com>
-* Sandeep Mangukiya <smangukiya@opensourceintegrators.com>
-* Sudarshan Kadalazhi <skadalazhi@opensourceintegrators.com>
-* Murtuza Saleh <murtuza.saleh@serpentcs.com>
-* Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
-* Nikul Chaudhary <nikul.chaudhary.serpentcs@gmail.com>
-* Ammar Offcewala <aofficewala@opensourceintegrators.com>
-* Urvisha Desai <udesai@opensourceintegrators.com>
+- Bhavesh Odedra <bodedra@opensourceintegrators.com>
+- Balaji Kannan <bkannan@opensourceintegrators.com>
+- Sandeep Mangukiya <smangukiya@opensourceintegrators.com>
+- Sudarshan Kadalazhi <skadalazhi@opensourceintegrators.com>
+- Murtuza Saleh <murtuza.saleh@serpentcs.com>
+- Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+- Nikul Chaudhary <nikul.chaudhary.serpentcs@gmail.com>
+- Ammar Offcewala <aofficewala@opensourceintegrators.com>
+- Urvisha Desai <udesai@opensourceintegrators.com>
 
 Other credits
-~~~~~~~~~~~~~
+-------------
 
 The development of this module has been financially supported by:
 
-* Open Source Integrators <https://www.opensourceintegrators.com>
-* Serpent Consulting Services Pvt. Ltd. <https://www.serpentcs.com>
+- Open Source Integrators <https://www.opensourceintegrators.com>
+- Serpent Consulting Services Pvt. Ltd. <https://www.serpentcs.com>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -112,6 +113,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-Urvisha-OSI| 
 
-This module is part of the `OCA/account-payment <https://github.com/OCA/account-payment/tree/16.0/partner_aging>`_ project on GitHub.
+This module is part of the `OCA/account-payment <https://github.com/OCA/account-payment/tree/17.0/partner_aging>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
