@@ -364,4 +364,4 @@ class ResPartnerAgingSupplier(models.Model):
 
     def init(self):
         self.execute_aging_query()
-        return super(ResPartnerAgingSupplier, self).init()
+        return super().init()

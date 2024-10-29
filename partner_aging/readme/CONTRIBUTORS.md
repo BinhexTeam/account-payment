@@ -7,3 +7,4 @@
 - Nikul Chaudhary \<<nikul.chaudhary.serpentcs@gmail.com>\>
 - Ammar Offcewala \<<aofficewala@opensourceintegrators.com>\>
 - Urvisha Desai \<<udesai@opensourceintegrators.com>\>
+- Miquel Alzanillas \<<malzanillas@apsl.net>\>

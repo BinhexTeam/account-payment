@@ -54,7 +54,7 @@
                     type="object"
                     icon="fa-list-alt"
                     title="Open Document"
-                    attrs="{'invisible':[('invoice_id', '=', False)]}"
+                    invisible="not invoice_id"
                 />
                 <field name="invoice_ref" />
                 <field name="not_due" string="Current" sum="Total" />

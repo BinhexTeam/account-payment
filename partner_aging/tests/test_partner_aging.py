@@ -18,7 +18,7 @@ class TestPartnerAging(AccountTestInvoicingCommon):
         super().setUpClass(chart_template_ref=chart_template_ref)
 
     def setUp(self):
-        super(TestPartnerAging, self).setUp()
+        super().setUp()
         self.partner_aging_date_model = self.env["res.partner.aging.date"]
         self.partner_aging_supplier_model = self.env["res.partner.aging.supplier"]
         self.partner_aging_customer_model = self.env["res.partner.aging.customer"]
