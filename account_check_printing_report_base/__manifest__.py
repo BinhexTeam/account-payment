@@ -15,7 +15,7 @@
     "Odoo Community Association (OCA)",
     "category": "Generic Modules/Accounting",
     "website": "https://github.com/OCA/account-payment",
-    "depends": ["account_check_printing", "report_wkhtmltopdf_param"],
+    "depends": ["account_check_printing"],
     "external_dependencies": {"python": ["num2words"]},
     "data": [
         "security/ir.model.access.csv",
