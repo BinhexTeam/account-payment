@@ -30,6 +30,7 @@ setuptools.setup(
         'odoo-addon-account_payment_widget_amount>=15.0dev,<15.1dev',
         'odoo-addon-account_voucher_killer>=15.0dev,<15.1dev',
         'odoo-addon-partner_aging>=15.0dev,<15.1dev',
+        'odoo-addon-partner_restrict_payment_acquirer>=15.0dev,<15.1dev',
         'odoo-addon-sale_payment_term_security>=15.0dev,<15.1dev',
     ],
     classifiers=[
