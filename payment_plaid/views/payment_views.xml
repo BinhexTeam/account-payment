@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_payment_provider_form_plaid" model="ir.ui.view">
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <!-- Insertar un nuevo grupo de campos para configuración Plaid cuando el proveedor sea Plaid -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Plaid Configuration" attrs="{'invisible': [('code', 'not in', ['plaid_manual'])]}">
+                    <group>
+                        <field name="plaid_env" />
+                        <field name="plaid_client_id" />
+                        <field name="plaid_secret" />
+                    </group>                    
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
