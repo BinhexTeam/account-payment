@@ -1,28 +1,23 @@
-
 import logging
 
-from odoo import _, models, api
-from odoo.exceptions import ValidationError
-
-
-from werkzeug import urls
+from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
+
 class PaymentTransaction(models.Model):
-    _inherit = 'payment.transaction'
+    _inherit = "payment.transaction"
 
     @api.model
     def _get_specific_rendering_values(self, processing_values):
         rendering_values = super()._get_specific_rendering_values(processing_values)
-        rendering_values['provider'] = self.provider_id
+        rendering_values["provider"] = self.provider_id
         return rendering_values
 
-
     def _get_processing_values(self):
-            res = super()._get_processing_values()
-            res.update({'id': self.id})
-            return res
+        res = super()._get_processing_values()
+        res.update({"id": self.id})
+        return res
 
     def _create_payment(self, **extra_create_values):
         self.ensure_one()
@@ -45,8 +40,6 @@ class PaymentTransaction(models.Model):
             "journal_id": self.provider_id.journal_id.id,
             "company_id": self.provider_id.company_id.id,
             "payment_method_line_id": payment_method_line[0].id,
-            # "payment_token_id": self.token_id.id, #Solo si se va usar a futuro pagos recurrentes
-            "payment_type": "inbound",
             "ref": f"{self.reference} - {self.partner_id.name}",
             **extra_create_values,
         }

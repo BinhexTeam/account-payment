@@ -7,15 +7,22 @@
         <field name="state">disabled</field>
         <field name="module_id" ref="base.module_payment_plaid" />
         <field name="company_id" ref="base.main_company" />
-        <field name="inline_form_view_id" ref="payment_plaid.payment_form_plaid_manual" />
+        <field
+            name="inline_form_view_id"
+            ref="payment_plaid.payment_form_plaid_manual"
+        />
         <field name="payment_icon_ids" eval="False" />
-        <field name="image_128"
-               type="base64"
-               file="payment_plaid/static/description/icon.png"/>
+        <field
+            name="image_128"
+            type="base64"
+            file="payment_plaid/static/description/icon.png"
+        />
         <!-- Mensajes para el usuario -->
-        <field name="pending_msg">We've registered your order. 
+        <field name="pending_msg">We've registered your order.
         Please transfer the amount to our bank account, and your order will be processed once payment is confirmed.
         </field>
-        <field name="done_msg">We have received your payment by transfer. Thank you for your purchase!</field>
+        <field
+            name="done_msg"
+        >We have received your payment by transfer. Thank you for your purchase!</field>
     </record>
 </odoo>

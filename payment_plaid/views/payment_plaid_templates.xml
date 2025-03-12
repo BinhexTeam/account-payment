@@ -5,11 +5,12 @@
             <input type="hidden" name="provider_id" t-att-value="provider.id" />
 
             <div id="plaid_manual_container">
-                <p>Link your bank account through Plaid to process payments via bank transfer.</p>
+                <p
+                >Link your bank account through Plaid to process payments via bank transfer.</p>
             </div>
 
             <!-- CDN scripts, necesarios solo una vez en el sitio, idealmente cargados desde assets -->
-            <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+            <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js" />
         </div>
     </template>
 
