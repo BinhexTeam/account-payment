@@ -5,60 +5,38 @@
 ================
 Payment Plaid
 
-Integración de Odoo con Plaid para facilitar pagos bancarios y transferencias.
+Odoo integration with Plaid to facilitate bank payments and transfers.
 
-Este módulo proporciona la integración entre Odoo y Plaid <https://plaid.com/>_, permitiendo a los usuarios realizar pagos y transferencias bancarias de manera segura y eficiente.
+This module provides integration between Odoo and Plaid <https://plaid.com/>_, allowing users to make payments and bank transfers securely and efficiently.
 
-Características
+Features
 
-Conexión segura con Plaid para la autenticación de cuentas bancarias.
+- Secure connection with Plaid for bank account authentication.
+- Ability to select the desired bank account within Odoo.
+- Payment processing through the Plaid API.
+- Error handling and user cancellations with friendly messages.
 
-Posibilidad de seleccionar la cuenta bancaria deseada dentro de Odoo.
+Installation
 
-Procesamiento de pagos a través de la API de Plaid.
+To install this module, simply add it to your addons directory and update the application list in Odoo.
 
-Manejo de errores y cancelaciones de usuario con mensajes amigables.
+Configuration
 
-Instalación
+- Register on Plaid <https://plaid.com/>_ and obtain your API credentials.
+- Configure the credentials in Settings > Payment Methods in Odoo.
+- Link your Plaid account with the desired banks.
 
-Para instalar este módulo, simplemente agrégalo a tu directorio de addons y actualiza la lista de aplicaciones en Odoo.
+Usage
 
-Configuración
+1. Navigate to the payment module in Odoo.
+2. Authenticate and select the linked bank account.
+3. Process payments securely through Plaid.
+4. Review transaction history within Odoo.
 
-Regístrate en Plaid <https://plaid.com/>_ y obtén tus credenciales API.
+Contributing
 
-Configura las credenciales en Ajustes > Métodos de Pago en Odoo.
+Contributions are welcome. Please follow the OCA guidelines for contributions.
 
-Activa el método de pago Plaid en la configuración de pagos.
+Maintainers
 
-Uso
-
-Al seleccionar el método de pago Plaid, el usuario será redirigido a la interfaz de Plaid para seleccionar una cuenta bancaria.
-
-Una vez seleccionada la cuenta, el pago será procesado automáticamente.
-
-Se mostrará el estado de la transacción en el historial de pagos de Odoo.
-
-Desarrollo
-
-Este módulo sigue los estándares de desarrollo de OCA. Para contribuir:
-
-Clona el repositorio y crea una nueva rama para tus cambios.
-
-Asegúrate de cumplir con las guías de estilo y convenciones de OCA.
-
-Envía tu PR para revisión.
-
-Créditos
-
-Autor:
-
-Odoo Community Association (OCA)
-
-Mantenedor:
-
-Este módulo es mantenido por la comunidad OCA.
-
-Licencia:
-
-Este módulo se publica bajo la licencia AGPL-3 <https://www.gnu.org/licenses/agpl-3.0.html>_.
+This module is maintained by the Odoo Community Association (OCA).
