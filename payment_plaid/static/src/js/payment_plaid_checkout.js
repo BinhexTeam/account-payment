@@ -11,15 +11,35 @@ odoo.define("payment_plaid.payment_form", (require) => {
     const Plaid = window.Plaid || null;
 
     const paymentPlaidMixin = {
-        _processRedirectPayment: function (code, providerId) {
+        /**
+         * Sobrescribimos el método genérico de procesar Redirecciones.
+         * @override
+         */
+        _processRedirectPayment: function (code, paymentOptionId, processingValues) {
             if (code !== "plaid_manual") {
                 return this._super(...arguments);
             }
 
+            // 1) Obtenemos el transactionId de processingValues
+            //    (se genera en el backend en _get_processing_values)
+            const transactionId = processingValues.transactionId || processingValues.id;
+
+            // 2) Llamamos a nuestro endpoint /payment/plaid/get_link_token
             return this._rpc({
                 route: "/payment/plaid/get_link_token",
-                params: {provider_id: providerId},
+                params: {
+                    provider_id: paymentOptionId,
+                    transaction_id: transactionId,
+                },
             }).then((response) => {
+                if (response.error) {
+                    return this._displayError(
+                        _t("Error"),
+                        _t("Failed to generate Plaid Link Token."),
+                        response.error
+                    );
+                }
+
                 const linkToken = response.link_token;
                 const handler = Plaid.create({
                     token: linkToken,
@@ -31,8 +51,9 @@ odoo.define("payment_plaid.payment_form", (require) => {
                                     this._submitPlaidTransfer(
                                         public_token,
                                         account_id,
-                                        providerId
-                                    ).then(() => (window.location = "/payment/status"));
+                                        transactionId,
+                                        paymentOptionId
+                                    );
                                 })
                                 .catch((err) =>
                                     this._displayError(
@@ -45,8 +66,9 @@ odoo.define("payment_plaid.payment_form", (require) => {
                             this._submitPlaidTransfer(
                                 public_token,
                                 accounts[0].id,
-                                providerId
-                            ).then(() => (window.location = "/payment/status"));
+                                transactionId,
+                                paymentOptionId
+                            );
                         }
                     },
                     onExit: (err) => {
@@ -63,6 +85,9 @@ odoo.define("payment_plaid.payment_form", (require) => {
             });
         },
 
+        /**
+         * Muestra un diálogo para elegir la cuenta bancaria si hay varias.
+         */
         _showAccountSelection: function (accounts) {
             return new Promise((resolve, reject) => {
                 const $modalContent = $(`
@@ -96,22 +121,51 @@ odoo.define("payment_plaid.payment_form", (require) => {
             });
         },
 
-        _submitPlaidTransfer: function (public_token, account_id, provider_id) {
+        /**
+         * Llama a nuestro endpoint para hacer la transferencia en Plaid
+         * y, en caso de éxito, redirigir al usuario.
+         */
+        _submitPlaidTransfer: function (
+            public_token,
+            account_id,
+            transactionId,
+            providerId
+        ) {
             return this._rpc({
                 route: "/payment/plaid/submit",
-                params: {public_token, account_id, provider_id},
-            }).then((response) => {
-                if (response.result !== "success") {
+                params: {
+                    public_token,
+                    account_id,
+                    provider_id: providerId,
+                    transaction_id: transactionId,
+                },
+            })
+                .then((response) => {
+                    if (response.result === "success") {
+                        window.location =
+                            response.redirect_url || "/payment/confirmation";
+                    } else if (response.result === "error") {
+                        window.location = response.redirect_url || "/payment/status";
+                    } else if (response.error) {
+                        // Error inesperado
+                        Dialog.alert(this, {
+                            title: _t("Error"),
+                            size: "medium",
+                            $content: $("<div>").text(
+                                response.error || _t("Unknown payment error.")
+                            ),
+                        });
+                    }
+                })
+                .catch((error) => {
                     Dialog.alert(this, {
-                        title: _t("Error"),
+                        title: _t("Payment Error"),
                         size: "medium",
-                        $content: $("<p>").text(
-                            response.error || _t("Plaid transfer error.")
+                        $content: $("<p/>").text(
+                            error.message || _t("Unexpected error.")
                         ),
                     });
-                    throw new Error(response.error);
-                }
-            });
+                });
         },
     };
 

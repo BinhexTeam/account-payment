@@ -1,8 +1,4 @@
-import logging
-
 from odoo import api, models
-
-_logger = logging.getLogger(__name__)
 
 
 class PaymentTransaction(models.Model):
@@ -10,13 +6,16 @@ class PaymentTransaction(models.Model):
 
     @api.model
     def _get_specific_rendering_values(self, processing_values):
+        # Llamar primero al super
         rendering_values = super()._get_specific_rendering_values(processing_values)
+        # Añade el provider a la vista (si lo quieres)
         rendering_values["provider"] = self.provider_id
         return rendering_values
 
     def _get_processing_values(self):
         res = super()._get_processing_values()
-        res.update({"id": self.id})
+        # Odoo suele meter "reference" y otras cosas. Asegúrate de incluir tu ID:
+        res.update({"transactionId": self.id})
         return res
 
     def _create_payment(self, **extra_create_values):
@@ -25,6 +24,7 @@ class PaymentTransaction(models.Model):
         if self.provider_id.code != "plaid_manual":
             return super()._create_payment(**extra_create_values)
 
+        # Procedimiento personalizado si la transacción es de Plaid
         payment_method_line = (
             self.provider_id.journal_id.inbound_payment_method_line_ids.filtered(
                 lambda l: l.payment_provider_id.id == self.provider_id.id
@@ -39,7 +39,9 @@ class PaymentTransaction(models.Model):
             "partner_type": "customer",
             "journal_id": self.provider_id.journal_id.id,
             "company_id": self.provider_id.company_id.id,
-            "payment_method_line_id": payment_method_line[0].id,
+            "payment_method_line_id": payment_method_line[0].id
+            if payment_method_line
+            else None,
             "ref": f"{self.reference} - {self.partner_id.name}",
             **extra_create_values,
         }
@@ -48,6 +50,7 @@ class PaymentTransaction(models.Model):
         payment.action_post()
         self.payment_id = payment
 
+        # Reconciliar contra facturas (si las hay)
         if self.invoice_ids:
             self.invoice_ids.filtered(lambda inv: inv.state == "draft").action_post()
             (payment.line_ids + self.invoice_ids.line_ids).filtered(

@@ -16,14 +16,25 @@ class PlaidController(http.Controller):
         methods=["POST"],
         cors="*",
     )
-    def get_link_token(self, provider_id=None):
+    def get_link_token(self, provider_id=None, transaction_id=None):
         """Genera un link_token de Plaid para Transfer."""
         if not provider_id:
             return {"error": "provider_id not specified"}
+        if not transaction_id:
+            return {"error": "transaction_id not specified"}
 
-        provider = request.env["payment.provider"].sudo().browse(int(provider_id))
-        if not provider:
-            return {"error": "Payment provider (Plaid) not found."}
+        # Recuperar la transacción. A partir de aquí, sacamos su provider.
+        transaction = (
+            request.env["payment.transaction"].sudo().browse(int(transaction_id))
+        )
+        if not transaction or not transaction.provider_id:
+            return {"error": "No valid payment transaction."}
+
+        provider = transaction.provider_id
+        if provider.code != "plaid_manual":
+            return {
+                "error": "This transaction is not using 'plaid_manual' as payment provider."
+            }
 
         plaid_env = provider.plaid_env or "sandbox"
         plaid_url = {
@@ -41,7 +52,7 @@ class PlaidController(http.Controller):
                 "client_user_id": f"odoo_user_{request.session.uid}"
             },
             "client_name": "Odoo Shop",
-            "products": ["transfer"],  # <--- Asegúrate de que sea 'transfer'
+            "products": ["transfer"],
             "country_codes": ["US"],
             "language": "en",
         }
@@ -55,67 +66,39 @@ class PlaidController(http.Controller):
                 return {
                     "error": data.get("error_message", "Error generating link_token")
                 }
-            return data
+            return data  # Devuelve { "link_token": "...", ...}
         except Exception as e:
-            return {"error": f"Error al solicitar link_token a Plaid: {str(e)}"}
+            return {"error": f"Error requesting link_token from Plaid: {str(e)}"}
 
     @http.route(
         "/payment/plaid/submit", type="json", auth="public", methods=["POST"], cors="*"
     )
     def plaid_submit(self, **kwargs):
         """
-        Recibe public_token y account_id tras la autenticación en Plaid Link,
-        y crea la Transfer en Plaid:
-          1) Exchange public_token -> access_token
-          2) Crear Transfer Authorization
-          3) Crear Transfer
-          4) Marcar transacción en Odoo como pagada (o pendiente).
+        Recibe public_token y account_id tras la autenticación en Plaid Link.
+        1) Exchange public_token -> access_token
+        2) Crear Transfer Authorization
+        3) Crear Transfer
+        4) Confirmar la transacción en Odoo
         """
         public_token = kwargs.get("public_token")
         account_id = kwargs.get("account_id")
         provider_id = kwargs.get("provider_id")
+        transaction_id = kwargs.get("transaction_id")
 
-        if not public_token or not account_id or not provider_id:
-            return {
-                "error": "Faltan datos necesarios (public_token/account_id/provider_id)."
-            }
+        if not (public_token and account_id and provider_id and transaction_id):
+            return {"error": "Missing parameters."}
 
-        provider = request.env["payment.provider"].sudo().browse(int(provider_id))
-        if not provider:
-            return {"error": "Payment provider Plaid not found."}
-
-        # Obtenemos el sale_order (carrito) para calcular monto y crear transacción
-        website = request.env["website"].get_current_website()
-        sale_order = website.sale_get_order()
-        if not sale_order:
-            return {"error": "There is no active sales order (sale_order) to process."}
-
-        PaymentTransaction = request.env["payment.transaction"].sudo()
-        transaction = PaymentTransaction.search(
-            [("reference", "=", sale_order.name)], limit=1
+        # 1) Recuperar transacción
+        transaction = (
+            request.env["payment.transaction"].sudo().browse(int(transaction_id))
         )
+        if not transaction or transaction.provider_id.id != int(provider_id):
+            return {"error": "Invalid transaction or provider mismatch."}
 
-        if not transaction:
-            # Crear transacción si no existe
-            transaction_vals = {
-                "amount": sale_order.amount_total,
-                "currency_id": sale_order.currency_id.id,
-                "provider_id": provider.id,
-                "operation": "online_redirect",
-                "partner_id": sale_order.partner_id.id,
-                "reference": sale_order.name,
-            }
-            transaction = PaymentTransaction.create(transaction_vals)
-        else:
-            # Actualizar la transacción existente si fuera necesario
-            transaction.write(
-                {
-                    "amount": sale_order.amount_total,
-                    "currency_id": sale_order.currency_id.id,
-                }
-            )
+        provider = transaction.provider_id
 
-        # --- Paso 1) Intercambio del public_token -> access_token ---
+        # 2) Intercambiar public_token -> access_token
         plaid_env = provider.plaid_env or "sandbox"
         plaid_url = {
             "sandbox": "https://sandbox.plaid.com",
@@ -149,21 +132,20 @@ class PlaidController(http.Controller):
 
         access_token = exchange_data["access_token"]
 
-        # --- Paso 2) Crear la autorización de la Transfer ---
-        # Documentación: https://plaid.com/docs/api/transfer/#transferauthorizationcreate
-        amount_str = "{:.2f}".format(sale_order.amount_total)
+        # 3) Crear la autorización de la Transfer
+        amount_str = "{:.2f}".format(transaction.amount)  # Usar transaction.amount
         auth_payload = {
             "client_id": provider.plaid_client_id,
             "secret": provider.plaid_secret,
             "access_token": access_token,
             "account_id": account_id,
             "type": "debit",
-            "amount": amount_str,  # 2 decimales
+            "amount": amount_str,
             "ach_class": "ppd",
             "network": "ach",
             "user": {
-                "legal_name": sale_order.partner_id.name,
-                "email_address": sale_order.partner_id.email,
+                "legal_name": transaction.partner_id.name or "Unknown",
+                "email_address": transaction.partner_id.email or "",
             },
         }
         try:
@@ -182,10 +164,13 @@ class PlaidController(http.Controller):
             transaction._set_error(f"Transfer failure (authorization): {err_msg}")
             return {"error": err_msg}
 
+        if auth_data["authorization"].get("decision") == "declined":
+            transaction._set_error("Transaction declined by Plaid.")
+            return {"result": "error", "redirect_url": "/payment/status"}
+
         authorization_id = auth_data["authorization"]["id"]
 
-        # --- Paso 3) Crear la Transfer con la autorización ---
-        # https://plaid.com/docs/api/transfer/#transfercreate
+        # 4) Crear la Transfer
         web_base_url = (
             request.env["ir.config_parameter"].sudo().get_param("web.base.url")
         )
@@ -195,8 +180,8 @@ class PlaidController(http.Controller):
             "access_token": access_token,
             "account_id": account_id,
             "authorization_id": authorization_id,
-            "description": sale_order.name,  # máx 15 chars
-            "metadata": {"webhook": "{}/payment/plaid/webhook".format(web_base_url)},
+            "description": transaction.reference[:15],  # máx 15 chars
+            "metadata": {"webhook": f"{web_base_url}/payment/plaid/webhook"},
         }
         try:
             transfer_res = requests.post(
@@ -216,25 +201,13 @@ class PlaidController(http.Controller):
             return {"error": err_msg}
 
         transfer_id = transfer_data["transfer"]["id"]
-
-        # Guardar en la transacción
         transaction.provider_reference = transfer_id
 
-        # Vincula la transacción al pedido y confirma el pedido correctamente
-        sale_order.write(
-            {
-                "transaction_ids": [(4, transaction.id)],
-            }
-        )
+        # 5) Marcar la transacción como hecha y generar el pago
         transaction._set_done()
         transaction._create_payment()
-        sale_order.sudo().action_confirm()
 
-        # Limpieza de la sesión para que no siga existiendo el carrito
-        request.session["sale_last_order_id"] = sale_order.id
-        request.session["sale_order_id"] = False
-
-        # Redireccionamos al usuario a la confirmación nativa de Odoo
+        # 6) Redireccionamos al usuario a la confirmación
         return {"result": "success", "redirect_url": "/payment/status"}
 
     @http.route("/payment/plaid/webhook", type="json", auth="public", csrf=False)
