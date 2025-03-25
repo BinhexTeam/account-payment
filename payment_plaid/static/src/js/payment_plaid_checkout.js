@@ -86,7 +86,11 @@ odoo.define("payment_plaid.payment_form", (require) => {
         },
 
         /**
-         * Muestra un diálogo para elegir la cuenta bancaria si hay varias.
+         * Displays a dialog for the user to select their bank account
+         * in case there are multiple options.
+         *
+         * @param {Array} accounts - A list of bank accounts returned by Plaid.
+         * @returns {Promise<String>} Returns a Promise that resolves with the selected 'account_id'.
          */
         _showAccountSelection: function (accounts) {
             return new Promise((resolve, reject) => {
@@ -122,8 +126,14 @@ odoo.define("payment_plaid.payment_form", (require) => {
         },
 
         /**
-         * Llama a nuestro endpoint para hacer la transferencia en Plaid
-         * y, en caso de éxito, redirigir al usuario.
+         * Calls our endpoint to initiate the transfer via Plaid and,
+         * upon success, redirects the user to the confirmation page.
+         *
+         * @param {String} public_token - The public token provided by Plaid.
+         * @param {String} account_id - The identifier of the selected bank account.
+         * @param {String|Number} transactionId - The transaction ID generated in Odoo.
+         * @param {String|Number} providerId - The payment provider/pasarela ID.
+         * @returns {Promise<void>} Returns a Promise that resolves with no value upon completion.
          */
         _submitPlaidTransfer: function (
             public_token,
