@@ -29,6 +29,7 @@ addon | version | maintainers | summary
 [account_payment_term_extension](account_payment_term_extension/) | 17.0.1.0.2 |  | Adds rounding, months, weeks and multiple payment days properties on payment term lines
 [account_payment_term_security](account_payment_term_security/) | 17.0.1.0.0 | [![victoralmau](https://github.com/victoralmau.png?size=30px)](https://github.com/victoralmau) | Payment Term Security
 [partner_aging](partner_aging/) | 17.0.1.0.0 | [![Urvisha-OSI](https://github.com/Urvisha-OSI.png?size=30px)](https://github.com/Urvisha-OSI) | Aging as a view - invoices and credits
+[partner_restrict_payment_acquirer](partner_restrict_payment_acquirer/) | 17.0.1.0.0 |  | Partner Restrict Payment Acquirer
 [sale_payment_term_security](sale_payment_term_security/) | 17.0.1.0.0 | [![victoralmau](https://github.com/victoralmau.png?size=30px)](https://github.com/victoralmau) | Sale Payment Term Security
 
 [//]: # (end addons)
