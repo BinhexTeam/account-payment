@@ -133,13 +133,10 @@ class TestPaymentPlaid(TransactionCase):
         )
         self.assertEqual(
             res,
-            {
-                "error": "This transaction is not using 'plaid_manual' as payment provider."
-            },
+            {"error": "Not using 'plaid_manual' as payment provider."},
         )
 
     def test_get_link_token_success(self):
-        """Flujo exitoso: Plaid devuelve un link_token y el endpoint retorna ese token."""
         dummy_data = {
             "link_token": "fake-token-ABC123",
             "expiration": "2025-01-01T00:00:00Z",
@@ -153,12 +150,9 @@ class TestPaymentPlaid(TransactionCase):
             res = self.controller.get_link_token(
                 provider_id=self.provider_plaid.id, transaction_id=self.transaction.id
             )
-        # Verificar que se llamó a la URL esperada de Plaid Link Token (sandbox por defecto)
         self.assertTrue(mock_post.called)
-        self.assertIn("/link/token/create", mock_post.call_args[0][0])  # URL
-        # La respuesta debe incluir el link_token proporcionado
+        self.assertIn("/link/token/create", mock_post.call_args[0][0])
         self.assertEqual(res.get("link_token"), "fake-token-ABC123")
-        # Debe devolver todos los datos (en este caso incluimos expiration también)
         self.assertIn("expiration", res)
         self.assertEqual(res["expiration"], "2025-01-01T00:00:00Z")
 
@@ -177,7 +171,6 @@ class TestPaymentPlaid(TransactionCase):
         self.assertEqual(res, {"error": "Invalid API keys"})
 
     def test_get_link_token_error_response_no_link(self):
-
         dummy_data = {"expiration": "2025-01-01T00:00:00Z"}
         dummy_response = DummyResponse(status_code=200, data=dummy_data)
         with patch(
@@ -224,12 +217,11 @@ class TestPaymentPlaid(TransactionCase):
         tx = self.transaction
         # Asegurarse que la transacción inicial no está en estado error
         self.assertNotEqual(tx.state, "error")
-        # Parchear la primera llamada a requests.post (token exchange) para que lance excepción
         side_effects = [Exception("Exchange failure")]
-        with patch(
-            "odoo.addons.payment_plaid.controllers.controllers.requests.post",
-            side_effect=side_effects,
-        ):
+        plaid_post_path = (
+            "odoo.addons.payment_plaid.controllers.controllers.requests.post"
+        )
+        with patch(plaid_post_path, side_effect=side_effects):
             res = self.controller.plaid_submit(
                 public_token="pub_token_test",
                 account_id="acc_test",

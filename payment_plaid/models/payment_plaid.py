@@ -19,7 +19,7 @@ class PaymentProviderPlaid(models.Model):
         ],
         string="Plaid Environment",
         default="sandbox",
-        help="Plaid environment to use (Sandbox for testing, Development or Production).",
+        help="Plaid environment to use (Sandbox, Development or Production).",
     )
     plaid_client_id = fields.Char("Client ID", help="Client ID provided by Plaid")
     plaid_secret = fields.Char("Secret", help="Secret Key provided by Plaid")
@@ -31,6 +31,4 @@ class PaymentProviderPlaid(models.Model):
             # Siempre usamos formulario inline (no redirección) para Plaid
             return True
         # Caso contrario, usar comportamiento por defecto
-        return super(PaymentProviderPlaid, self)._should_build_inline_form(
-            is_validation
-        )
+        return super()._should_build_inline_form(is_validation)

@@ -27,7 +27,7 @@ class PaymentTransaction(models.Model):
         # Procedimiento personalizado si la transacción es de Plaid
         payment_method_line = (
             self.provider_id.journal_id.inbound_payment_method_line_ids.filtered(
-                lambda l: l.payment_provider_id.id == self.provider_id.id
+                lambda line: line.payment_provider_id.id == self.provider_id.id
             )
         )
 

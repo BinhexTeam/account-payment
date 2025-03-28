@@ -1,10 +1,10 @@
 {
     "name": "Plaid ACH Payment Integration ",
-    "summary": "Plaid integration (ACH via manual transfer) as an eCommerce payment method",
+    "summary": "Plaid integration (ACH via manual transfer)",
     "author": "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/account-payment",
     "category": "Accounting/Payment Providers",
-    "version": "16.0.1.0.0",
+    "version": "17.0.1.0.0",
     "license": "LGPL-3",
     "depends": ["payment", "website_sale"],
     "data": [

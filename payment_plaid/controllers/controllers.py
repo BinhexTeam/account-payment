@@ -32,9 +32,7 @@ class PlaidController(http.Controller):
 
         provider = transaction.provider_id
         if provider.code != "plaid_manual":
-            return {
-                "error": "This transaction is not using 'plaid_manual' as payment provider."
-            }
+            return {"error": "Not using 'plaid_manual' as payment provider."}
 
         plaid_env = provider.plaid_env or "sandbox"
         plaid_url = {
@@ -133,7 +131,7 @@ class PlaidController(http.Controller):
         access_token = exchange_data["access_token"]
 
         # 3) Crear la autorización de la Transfer
-        amount_str = "{:.2f}".format(transaction.amount)  # Usar transaction.amount
+        amount_str = f"{transaction.amount:.2f}"  # Usar transaction.amount
         auth_payload = {
             "client_id": provider.plaid_client_id,
             "secret": provider.plaid_secret,
