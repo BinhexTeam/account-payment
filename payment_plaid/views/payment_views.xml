@@ -7,7 +7,7 @@
             <xpath expr="//sheet/notebook" position="inside">
                 <page
                     string="Plaid Configuration"
-                    attrs="{'invisible': [('code', 'not in', ['plaid_manual'])]}"
+                    invisible="code not in ['plaid_manual']"
                 >
                     <group>
                         <field name="plaid_env" />

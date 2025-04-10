@@ -1,18 +1,16 @@
 <odoo>
     <template id="payment_form_plaid_manual" name="Plaid (Bank Transfer) Payment Form">
-        <div t-if="provider.code == 'plaid_manual'">
-            <!-- Guarda provider_id en un input oculto para acceder desde JS -->
-            <input type="hidden" name="provider_id" t-att-value="provider.id" />
+        <div>
+            <!-- Campo oculto para uso en JS -->
+            <input type="hidden" name="provider_id" t-att-value="payment_provider_id" />
 
             <div id="plaid_manual_container">
                 <p
                 >Link your bank account through Plaid to process payments via bank transfer.</p>
             </div>
 
-            <!-- CDN scripts, necesarios solo una vez en el sitio, idealmente cargados desde assets -->
+            <!-- Recomendación: mover esto a web.assets_frontend si es posible -->
             <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js" />
         </div>
     </template>
-
-
 </odoo>

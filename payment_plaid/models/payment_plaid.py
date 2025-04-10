@@ -32,3 +32,8 @@ class PaymentProviderPlaid(models.Model):
             return True
         # Caso contrario, usar comportamiento por defecto
         return super()._should_build_inline_form(is_validation)
+
+    def _get_supported_payment_flows(self):
+        if self.code == "plaid_manual":
+            return ["direct"]
+        return super()._get_supported_payment_flows()

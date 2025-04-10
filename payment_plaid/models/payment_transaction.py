@@ -24,11 +24,10 @@ class PaymentTransaction(models.Model):
         if self.provider_id.code != "plaid_manual":
             return super()._create_payment(**extra_create_values)
 
-        # Procedimiento personalizado si la transacción es de Plaid
-        payment_method_line = (
-            self.provider_id.journal_id.inbound_payment_method_line_ids.filtered(
-                lambda line: line.payment_provider_id.id == self.provider_id.id
-            )
+        journal = self.provider_id.journal_id
+        provider_id = self.provider_id.id
+        payment_method_line = journal.inbound_payment_method_line_ids.filtered(
+            lambda line: line.payment_provider_id.id == provider_id
         )
 
         payment_values = {
@@ -39,9 +38,7 @@ class PaymentTransaction(models.Model):
             "partner_type": "customer",
             "journal_id": self.provider_id.journal_id.id,
             "company_id": self.provider_id.company_id.id,
-            "payment_method_line_id": payment_method_line[0].id
-            if payment_method_line
-            else None,
+            "payment_method_line_id": payment_method_line[:1].id or None,
             "ref": f"{self.reference} - {self.partner_id.name}",
             **extra_create_values,
         }
@@ -49,8 +46,7 @@ class PaymentTransaction(models.Model):
         payment = self.env["account.payment"].sudo().create(payment_values)
         payment.action_post()
         self.payment_id = payment
-
-        # Reconciliar contra facturas (si las hay)
+        # Conciliar con facturas si las hay:
         if self.invoice_ids:
             self.invoice_ids.filtered(lambda inv: inv.state == "draft").action_post()
             (payment.line_ids + self.invoice_ids.line_ids).filtered(
