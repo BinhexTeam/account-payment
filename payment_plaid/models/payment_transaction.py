@@ -6,15 +6,12 @@ class PaymentTransaction(models.Model):
 
     @api.model
     def _get_specific_rendering_values(self, processing_values):
-        # Llamar primero al super
         rendering_values = super()._get_specific_rendering_values(processing_values)
-        # Añade el provider a la vista (si lo quieres)
         rendering_values["provider"] = self.provider_id
         return rendering_values
 
     def _get_processing_values(self):
         res = super()._get_processing_values()
-        # Odoo suele meter "reference" y otras cosas. Asegúrate de incluir tu ID:
         res.update({"transactionId": self.id})
         return res
 
@@ -46,7 +43,6 @@ class PaymentTransaction(models.Model):
         payment = self.env["account.payment"].sudo().create(payment_values)
         payment.action_post()
         self.payment_id = payment
-        # Conciliar con facturas si las hay:
         if self.invoice_ids:
             self.invoice_ids.filtered(lambda inv: inv.state == "draft").action_post()
             (payment.line_ids + self.invoice_ids.line_ids).filtered(

@@ -4,13 +4,11 @@ from odoo import fields, models
 class PaymentProviderPlaid(models.Model):
     _inherit = "payment.provider"
 
-    # Agregar las nuevas opciones al campo de selección 'code'
     code = fields.Selection(
         selection_add=[("plaid_manual", "Plaid (Bank Transfer)")],
         ondelete={"plaid_manual": "set default"},
     )
 
-    # Campos de configuración de Plaid
     plaid_env = fields.Selection(
         [
             ("sandbox", "Sandbox"),
@@ -28,9 +26,7 @@ class PaymentProviderPlaid(models.Model):
         """Forzar el uso de formulario integrado (inline) en nuestros métodos Plaid."""
         self.ensure_one()
         if self.code in ("plaid_manual"):
-            # Siempre usamos formulario inline (no redirección) para Plaid
             return True
-        # Caso contrario, usar comportamiento por defecto
         return super()._should_build_inline_form(is_validation)
 
     def _get_supported_payment_flows(self):

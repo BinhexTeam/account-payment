@@ -23,7 +23,6 @@ class PlaidController(http.Controller):
         if not transaction_id:
             return {"error": "transaction_id not specified"}
 
-        # Recuperar la transacción. A partir de aquí, sacamos su provider.
         transaction = (
             request.env["payment.transaction"].sudo().browse(int(transaction_id))
         )
@@ -41,14 +40,10 @@ class PlaidController(http.Controller):
             "production": "https://production.plaid.com",
         }.get(plaid_env, "https://sandbox.plaid.com")
 
-        # IMPORTANTE: products=["transfer"] para crear un Link Token de Transfer
         payload = {
             "client_id": provider.plaid_client_id,
             "secret": provider.plaid_secret,
-            "user": {
-                # ID único para identificar al usuario final dentro de Plaid
-                "client_user_id": f"odoo_user_{request.session.uid}"
-            },
+            "user": {"client_user_id": f"odoo_user_{request.session.uid}"},
             "client_name": "Odoo Shop",
             "products": ["transfer"],
             "country_codes": ["US"],
@@ -64,7 +59,7 @@ class PlaidController(http.Controller):
                 return {
                     "error": data.get("error_message", "Error generating link_token")
                 }
-            return data  # Devuelve { "link_token": "...", ...}
+            return data
         except Exception as e:
             return {"error": f"Error requesting link_token from Plaid: {str(e)}"}
 
@@ -87,7 +82,6 @@ class PlaidController(http.Controller):
         if not (public_token and account_id and provider_id and transaction_id):
             return {"error": "Missing parameters."}
 
-        # 1) Recuperar transacción
         transaction = (
             request.env["payment.transaction"].sudo().browse(int(transaction_id))
         )
@@ -96,7 +90,6 @@ class PlaidController(http.Controller):
 
         provider = transaction.provider_id
 
-        # 2) Intercambiar public_token -> access_token
         plaid_env = provider.plaid_env or "sandbox"
         plaid_url = {
             "sandbox": "https://sandbox.plaid.com",
@@ -130,8 +123,7 @@ class PlaidController(http.Controller):
 
         access_token = exchange_data["access_token"]
 
-        # 3) Crear la autorización de la Transfer
-        amount_str = f"{transaction.amount:.2f}"  # Usar transaction.amount
+        amount_str = f"{transaction.amount:.2f}"
         auth_payload = {
             "client_id": provider.plaid_client_id,
             "secret": provider.plaid_secret,
@@ -168,7 +160,6 @@ class PlaidController(http.Controller):
 
         authorization_id = auth_data["authorization"]["id"]
 
-        # 4) Crear la Transfer
         web_base_url = (
             request.env["ir.config_parameter"].sudo().get_param("web.base.url")
         )
@@ -178,7 +169,7 @@ class PlaidController(http.Controller):
             "access_token": access_token,
             "account_id": account_id,
             "authorization_id": authorization_id,
-            "description": transaction.reference[:15],  # máx 15 chars
+            "description": transaction.reference[:15],
             "metadata": {"webhook": f"{web_base_url}/payment/plaid/webhook"},
         }
         try:
@@ -201,11 +192,9 @@ class PlaidController(http.Controller):
         transfer_id = transfer_data["transfer"]["id"]
         transaction.provider_reference = transfer_id
 
-        # 5) Marcar la transacción como hecha y generar el pago
         transaction._set_done()
         transaction._create_payment()
 
-        # 6) Redireccionamos al usuario a la confirmación
         return {"result": "success", "redirect_url": "/payment/status"}
 
     @http.route("/payment/plaid/webhook", type="json", auth="public", csrf=False)
@@ -222,13 +211,12 @@ class PlaidController(http.Controller):
             )
             plaid_url = f"https://{provider.plaid_env}.plaid.com"
 
-            # Paso 1: Consultar eventos recientes para saber cuál transferencia cambió.
             events_res = requests.post(
                 f"{plaid_url}/transfer/event/list",
                 json={
                     "client_id": provider.plaid_client_id,
                     "secret": provider.plaid_secret,
-                    "count": 10,  # últimos 10 eventos (ajusta según necesidad)
+                    "count": 10,
                 },
                 timeout=10,
             )
@@ -240,7 +228,6 @@ class PlaidController(http.Controller):
                 transfer_id = event.get("transfer_id")
                 event_type = event.get("event_type")
 
-                # Solo procesa eventos recientes relevantes (ejemplo: "posted")
                 if event_type == "posted":
                     transaction = (
                         request.env["payment.transaction"]
@@ -255,7 +242,6 @@ class PlaidController(http.Controller):
                     )
 
                     if transaction:
-                        # Verifica estado actual de la transferencia
                         transfer_res = requests.post(
                             f"{plaid_url}/transfer/get",
                             json={

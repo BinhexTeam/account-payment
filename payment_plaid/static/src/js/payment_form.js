@@ -47,7 +47,6 @@ PaymentForm.include({
             return;
         }
 
-        // 🔓 Quitar bloqueo visual de Odoo
         $(".o_blockUI").remove();
 
         const handler = Plaid.create({
@@ -59,7 +58,7 @@ PaymentForm.include({
                 if (accounts.length > 1) {
                     try {
                         account_id = await this._showAccountSelection(accounts);
-                        if (!account_id) return; // Usuario canceló
+                        if (!account_id) return;
                     } catch (e) {
                         this._displayErrorDialog(_t("Error"), e.message);
                         return;
@@ -130,7 +129,6 @@ PaymentForm.include({
 
             const $modal = $(modalHtml).appendTo("body");
 
-            // Resolver con account_id
             $modal.on("click", ".account-btn", function () {
                 if (!isResolved) {
                     isResolved = true;
@@ -140,7 +138,6 @@ PaymentForm.include({
                 }
             });
 
-            // Resolver como cancelado
             $modal.on("hidden.bs.modal", function () {
                 if (!isResolved) {
                     isResolved = true;

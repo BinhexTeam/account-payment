@@ -6,7 +6,7 @@
     "category": "Accounting/Payment Providers",
     "version": "17.0.1.0.0",
     "license": "LGPL-3",
-    "depends": ["payment", "website_sale"],
+    "depends": ["payment"],
     "data": [
         "views/payment_views.xml",
         "views/payment_plaid_templates.xml",
