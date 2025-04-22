@@ -5,6 +5,7 @@ import {_t} from "@web/core/l10n/translation";
 const Plaid = window.Plaid || null;
 
 PaymentForm.include({
+    /* eslint-disable no-unused-vars */
     async _prepareInlineForm(
         providerId,
         providerCode,
@@ -12,6 +13,8 @@ PaymentForm.include({
         paymentMethodCode,
         flow
     ) {
+        /* eslint-enable no-unused-vars */
+
         if (providerCode !== "plaid_manual") {
             return this._super(...arguments);
         }
@@ -31,7 +34,7 @@ PaymentForm.include({
         const transactionId = processingValues.transactionId || processingValues.id;
         const provider_id = processingValues.provider_id || null;
 
-        let response;
+        let response = null;
         try {
             response = await this.rpc("/payment/plaid/get_link_token", {
                 provider_id,
@@ -53,7 +56,7 @@ PaymentForm.include({
             token: response.link_token,
             onSuccess: async (public_token, metadata) => {
                 const accounts = metadata.accounts;
-                let account_id;
+                let account_id = null;
 
                 if (accounts.length > 1) {
                     try {
