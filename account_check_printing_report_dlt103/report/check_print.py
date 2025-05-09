@@ -12,4 +12,4 @@ class ReportCheckPrint(models.AbstractModel):
 
     @api.model
     def get_report_values(self, docids, data):
-        return super(ReportCheckPrint, self).get_report_values(docids, data)
+        return super().get_report_values(docids, data)
