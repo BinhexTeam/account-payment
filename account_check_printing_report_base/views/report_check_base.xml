@@ -41,37 +41,37 @@
                                     <tr>
                                         <th>Due Date</th>
                                         <th>Description</th>
-                                        <th class="text-right">Original Amount</th>
-                                        <th class="text-right">Balance Due</th>
-                                        <th class="text-right">Payment</th>
+                                        <th class="text-end">Original Amount</th>
+                                        <th class="text-end">Balance Due</th>
+                                        <th class="text-end">Payment</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <t t-foreach="paid_lines[o.id]" t-as="line">
                                         <tr>
-                                            <td>
-                                                <span t-esc="line['date_due']" />
+                                            <td class="text-center">
+                                                <span t-out="line['date_due']" />
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 <span
-                                                    t-esc="line['reference'] or line['number']"
+                                                    t-out="line['reference'] or line['number']"
                                                 />
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-end">
                                                 <span
-                                                    t-esc="line['amount_total']"
+                                                    t-out="line['amount_total']"
                                                     t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                                 />
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-end">
                                                 <span
-                                                    t-esc="line['residual']"
+                                                    t-out="line['residual']"
                                                     t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                                 />
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-end">
                                                 <span
-                                                    t-esc="line['paid_amount']"
+                                                    t-out="line['paid_amount']"
                                                     t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                                 />
                                             </td>
@@ -124,40 +124,40 @@
                                     <th>Invoice / Reference</th>
                                     <th>Invoice date</th>
                                     <th>Due Date</th>
-                                    <th class="text-right">Original Amount</th>
-                                    <th class="text-right">Balance Due</th>
-                                    <th class="text-right">Payment</th>
+                                    <th class="text-end">Original Amount</th>
+                                    <th class="text-end">Balance Due</th>
+                                    <th class="text-end">Payment</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="paid_lines[o.id]" t-as="line">
                                     <tr>
-                                        <td>
+                                        <td class="text-center">
                                             <span
-                                                t-esc="line['reference'] or line['number']"
+                                                t-out="line['reference'] or line['number']"
                                             />
                                         </td>
-                                        <td>
-                                            <span t-esc="line['date']" />
+                                        <td class="text-center">
+                                            <span t-out="line['date']" />
                                         </td>
-                                        <td>
-                                            <span t-esc="line['date_due']" />
+                                        <td class="text-center">
+                                            <span t-out="line['date_due']" />
                                         </td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <span
-                                                t-esc="line['amount_total']"
+                                                t-out="line['amount_total']"
                                                 t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                             />
                                         </td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <span
-                                                t-esc="line['residual']"
+                                                t-out="line['residual']"
                                                 t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                             />
                                         </td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <span
-                                                t-esc="line['paid_amount']"
+                                                t-out="line['paid_amount']"
                                                 t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                                             />
                                         </td>

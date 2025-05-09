@@ -4,10 +4,9 @@
 # Copyright 2017 Tecnativa.
 # Copyright 2018 iterativo.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-
 {
     "name": "Account Check Printing Report Base",
-    "version": "15.0.1.0.2",
+    "version": "17.0.1.0.0",
     "license": "AGPL-3",
     "author": "Eficent,"
     "Serpent Consulting Services Pvt. Ltd.,"
