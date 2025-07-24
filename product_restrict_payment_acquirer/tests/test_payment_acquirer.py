@@ -1,125 +1,140 @@
+# Copyright Cetmix OU 2025
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0).
+
 from odoo.tests import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
-class TestPaymentAcquirer(TransactionCase):
-    def setUp(self) -> None:
-        super().setUp()
+class TestPaymentProvider(TransactionCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
-        # Setup acquirers
-        self.paypal = self.env.ref("payment.payment_acquirer_paypal")
-        self.paypal.write({"state": "test"})
-        self.acquirers = self.env["payment.acquirer"].search(
+        # Initialize providers
+        cls.paypal = cls.env.ref("payment.payment_provider_paypal")
+        cls.paypal.write({"state": "test"})
+        cls.providers = cls.env["payment.provider"].search(
             [("state", "in", ["enabled", "test"])]
         )
-        self.wire_transfer = self.env.ref("payment.payment_acquirer_transfer")
+        cls.wire_transfer = cls.env.ref("payment.payment_provider_transfer")
+        cls.wire_transfer.write({"state": "enabled"})
 
-        # Setup partner
-        self.res_partner_deco = self.env.ref("base.res_partner_2")
-        self.res_partner_deco.write(
-            {"allowed_acquirer_ids": [(4, self.wire_transfer.id)]}
+        # Initialize partner restrictions
+        cls.res_partner_deco = cls.env.ref("base.res_partner_2")
+        cls.res_partner_deco.write(
+            {"allowed_payment_provider_ids": [(4, cls.wire_transfer.id)]}
         )
 
-        # Setup order
-        self.product_1 = self.env["product.product"].create(
+        # Create products with provider restrictions
+        cls.product_1 = cls.env["product.product"].create(
             {
                 "name": "Test Product 1",
-                "allowed_product_acquirer_ids": [
-                    (4, self.wire_transfer.id),
-                    (4, self.paypal.id),
+                "allowed_payment_provider_ids": [
+                    (4, cls.wire_transfer.id),
+                    (4, cls.paypal.id),
                 ],
             }
         )
-        self.product_2 = self.env["product.product"].create(
+        cls.product_2 = cls.env["product.product"].create(
             {
                 "name": "Test Product 2",
-                "allowed_product_acquirer_ids": [(4, self.paypal.id)],
+                "allowed_payment_provider_ids": [(4, cls.paypal.id)],
             }
         )
-        self.order = self.env["sale.order"].create(
+
+        # Create a sale order with two lines
+        cls.order = cls.env["sale.order"].create(
             {
-                "partner_id": self.res_partner_deco.id,
+                "partner_id": cls.res_partner_deco.id,
                 "order_line": [
-                    (0, 0, {"product_id": self.product_1.id, "product_uom_qty": 1.0}),
-                    (0, 0, {"product_id": self.product_2.id, "product_uom_qty": 1.0}),
+                    (0, 0, {"product_id": cls.product_1.id, "product_uom_qty": 1.0}),
+                    (0, 0, {"product_id": cls.product_2.id, "product_uom_qty": 1.0}),
                 ],
             }
         )
 
-    def test_get_allowed_acquirers_blank_option(self):
-        """This test covers acquirer restriction mode settings set to blank option
-        fall back to partner acquirers behaviour"""
+    def test_blank_mode(self):
+        """Test blank mode falls back to partner restrictions"""
         self.env["ir.config_parameter"].set_param(
             "product_acquirer_settings.product_acquirer_restriction_mode", False
         )
-        all_acquirers = list(self.acquirers)
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=self.order.id
-        )
-        self.assertListEqual(
-            result,
-            [self.wire_transfer],
-            msg="The acquirer must be same as assigned to the partner (Wire transfer)",
-        )
 
-        # If there's no order
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=None
+        # With order - should respect partner restrictions
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+            order_id=self.order.id,
         )
-        self.assertListEqual(
-            result,
-            [self.wire_transfer, self.paypal],
-            msg="All enabled acquirers must be returned",
-        )
+        self.assertEqual(providers, self.wire_transfer)
 
-    def test_get_allowed_acquirers_first_option(self):
-        """This test covers acquirer restriction mode settings set to the "first" option
-        and recalls acquirers set for the product in first sale order line"""
+        # Without order - should return all providers
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+        )
+        self.assertEqual(providers, self.wire_transfer | self.paypal)
+
+    def test_first_mode(self):
+        """Test first product mode"""
         self.env["ir.config_parameter"].set_param(
             "product_acquirer_settings.product_acquirer_restriction_mode", "first"
         )
-        all_acquirers = list(self.acquirers)
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=self.order.id
-        )
-        self.assertListEqual(
-            result,
-            [self.wire_transfer, self.paypal],
-            msg="Must be two acquirers as assigned to the product in first order line",
-        )
 
-        # If there's no order
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=None
+        # With order - should respect first product restrictions
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+            order_id=self.order.id,
         )
-        self.assertListEqual(
-            result,
-            [self.wire_transfer, self.paypal],
-            msg="All enabled acquirers must be returned",
-        )
+        self.assertEqual(providers, self.wire_transfer | self.paypal)
 
-    def test_get_allowed_acquirers_all_option(self):
-        """This test covers acquirer restriction mode settings set to the "all" option
-        and recalls common acquirer for all products in the sale order"""
+        # Without order - should return all providers
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+        )
+        self.assertEqual(providers, self.wire_transfer | self.paypal)
+
+    def test_all_mode(self):
+        """Test all products mode"""
         self.env["ir.config_parameter"].set_param(
             "product_acquirer_settings.product_acquirer_restriction_mode", "all"
         )
-        all_acquirers = list(self.acquirers)
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=self.order.id
-        )
-        self.assertListEqual(
-            result,
-            [self.paypal],
-            msg="The acquirer must equal common line for both order lines (Paypal)",
-        )
 
-        # If there's no order
-        result = self.env["payment.acquirer"].get_allowed_acquirers(
-            all_acquirers, order_id=None
+        # With order - should respect common providers for all products
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+            order_id=self.order.id,
         )
-        self.assertListEqual(
-            result,
-            [self.wire_transfer, self.paypal],
-            msg="All enabled acquirers must be returned",
+        self.assertEqual(providers, self.paypal)
+
+        # Without order - should return all providers
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
         )
+        self.assertEqual(providers, self.wire_transfer | self.paypal)
+
+    def test_fallback_behavior(self):
+        """Test fallback behavior when no providers match restrictions"""
+        # Set mode to 'all' but remove paypal from product 2
+        self.env["ir.config_parameter"].set_param(
+            "product_acquirer_settings.product_acquirer_restriction_mode", "all"
+        )
+        self.product_2.allowed_payment_provider_ids = False
+
+        # Should fall back to partner restrictions
+        providers = self.env["payment.provider"]._get_compatible_providers(
+            company_id=self.env.company.id,
+            partner_id=self.res_partner_deco.id,
+            amount=100,
+            order_id=self.order.id,
+        )
+        self.assertEqual(providers, self.wire_transfer)

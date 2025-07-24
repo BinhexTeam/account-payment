@@ -6,9 +6,9 @@
         <field name="inherit_id" ref="product.product_template_only_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//page[@name='sales']" position="inside">
-                <group string="Allowed Acquirers">
+                <group string="Allowed Payment Providers">
                     <field
-                        name="allowed_product_acquirer_ids"
+                        name="allowed_payment_provider_ids"
                         widget="many2many_tags"
                         groups="account.group_account_invoice"
                     />
