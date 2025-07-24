@@ -6,8 +6,7 @@ class PaymentAcquirer(models.Model):
 
     @api.model
     def get_allowed_acquirers(self, acquirers, invoice_id=None, order_id=None):
-
-        result = super(PaymentAcquirer, self).get_allowed_acquirers(
+        result = super().get_allowed_acquirers(
             acquirers, invoice_id=invoice_id, order_id=order_id
         )
 

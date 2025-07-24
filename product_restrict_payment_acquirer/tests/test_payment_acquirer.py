@@ -4,7 +4,7 @@ from odoo.tests import TransactionCase, tagged
 @tagged("post_install", "-at_install")
 class TestPaymentAcquirer(TransactionCase):
     def setUp(self) -> None:
-        super(TestPaymentAcquirer, self).setUp()
+        super().setUp()
 
         # Setup acquirers
         self.paypal = self.env.ref("payment.payment_acquirer_paypal")

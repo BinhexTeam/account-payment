@@ -12,7 +12,7 @@ class ProductAcquirerSettings(models.TransientModel):
     )
 
     def set_values(self):
-        result = super(ProductAcquirerSettings, self).set_values()
+        result = super().set_values()
         self.env["ir.config_parameter"].set_param(
             "product_acquirer_settings.product_acquirer_restriction_mode",
             self.product_acquirer_restriction_mode,

@@ -17,20 +17,22 @@ Product Restrict Payment Acquirer
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--payment-lightgray.png?logo=github
-    :target: https://github.com/OCA/account-payment/tree/14.0/product_restrict_payment_acquirer
+    :target: https://github.com/OCA/account-payment/tree/17.0/product_restrict_payment_acquirer
     :alt: OCA/account-payment
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/account-payment-14-0/account-payment-14-0-product_restrict_payment_acquirer
+    :target: https://translation.odoo-community.org/projects/account-payment-17-0/account-payment-17-0-product_restrict_payment_acquirer
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-payment&target_branch=14.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-payment&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module extends **partner_restrict_payment_acquirer** module functionality.
+This module extends **partner_restrict_payment_acquirer** module
+functionality.
 
-It allows to restrict payment acquirers based on products selected in Sales Order lines.
+It allows to restrict payment acquirers based on products selected in
+Sales Order lines.
 
 Only selected acquirers will be available for on-line payment in portal.
 
@@ -42,21 +44,25 @@ Only selected acquirers will be available for on-line payment in portal.
 Usage
 =====
 
-In General Settings - Sales section select “Payment Acquirer Restriction".
+In General Settings - Sales section select “Payment Acquirer
+Restriction".
 
 Following options are available:
 
-* "First product". Will allow acquirers selected in the product of the first line.
+- "First product". Will allow acquirers selected in the product of the
+  first line.
+- "All products". Will allow acquirers allowed in all products in all
+  lines.
 
-* "All products". Will allow acquirers allowed in all products in all lines.
-
-*Note: Leaving this field empty will disable product based on acquirer selection.*
+*Note: Leaving this field empty will disable product based on acquirer
+selection.*
 
 Open product form and go to "Sales" tab:
 
-    Add payment acquirers in "Allowed Acquirers" field.
+   Add payment acquirers in "Allowed Acquirers" field.
 
-*Note: Leaving this field empty will remove any restrictions and allow to select any acquirer.*
+*Note: Leaving this field empty will remove any restrictions and allow
+to select any acquirer.*
 
 *Note 2: Partner wide restriction will override product wide one.*
 
@@ -66,7 +72,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-payment/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/account-payment/issues/new?body=module:%20product_restrict_payment_acquirer%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/account-payment/issues/new?body=module:%20product_restrict_payment_acquirer%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -74,12 +80,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Cetmix
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -102,6 +108,6 @@ Current `maintainers <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-bearnard21| |maintainer-CetmixGitDrone| 
 
-This module is part of the `OCA/account-payment <https://github.com/OCA/account-payment/tree/14.0/product_restrict_payment_acquirer>`_ project on GitHub.
+This module is part of the `OCA/account-payment <https://github.com/OCA/account-payment/tree/17.0/product_restrict_payment_acquirer>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
