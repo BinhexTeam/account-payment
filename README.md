@@ -31,6 +31,7 @@ addon | version | maintainers | summary
 [account_payment_widget_amount](account_payment_widget_amount/) | 17.0.1.0.0 |  | Extends the payment widget to be able to choose the payment amount
 [partner_aging](partner_aging/) | 17.0.1.0.0 | <a href='https://github.com/Urvisha-OSI'><img src='https://github.com/Urvisha-OSI.png' width='32' height='32' style='border-radius:50%;' alt='Urvisha-OSI'/></a> | Aging as a view - invoices and credits
 [partner_restrict_payment_acquirer](partner_restrict_payment_acquirer/) | 17.0.1.0.0 |  | Partner Restrict Payment Acquirer
+[product_restrict_payment_acquirer](product_restrict_payment_acquirer/) | 17.0.1.0.0 | <a href='https://github.com/bearnard21'><img src='https://github.com/bearnard21.png' width='32' height='32' style='border-radius:50%;' alt='bearnard21'/></a> <a href='https://github.com/CetmixGitDrone'><img src='https://github.com/CetmixGitDrone.png' width='32' height='32' style='border-radius:50%;' alt='CetmixGitDrone'/></a> | Product Restrict Payment Acquirer
 [sale_payment_term_security](sale_payment_term_security/) | 17.0.1.0.0 | <a href='https://github.com/victoralmau'><img src='https://github.com/victoralmau.png' width='32' height='32' style='border-radius:50%;' alt='victoralmau'/></a> | Sale Payment Term Security
 
 [//]: # (end addons)
