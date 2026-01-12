@@ -1,0 +1,1 @@
+odoo-addon-account_payment_term_partner_paydays @ git+https://github.com/OCA/account-payment.git@refs/pull/908/head#subdirectory=account_payment_term_partner_paydays
