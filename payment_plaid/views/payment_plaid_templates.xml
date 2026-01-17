@@ -1,0 +1,16 @@
+<odoo>
+    <template id="payment_form_plaid_manual" name="Plaid (Bank Transfer) Payment Form">
+        <div>
+            <!-- Campo oculto para uso en JS -->
+            <input type="hidden" name="provider_id" t-att-value="payment_provider_id" />
+
+            <div id="plaid_manual_container">
+                <p
+                >Link your bank account through Plaid to process payments via bank transfer.</p>
+            </div>
+
+            <!-- Recomendación: mover esto a web.assets_frontend si es posible -->
+            <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js" />
+        </div>
+    </template>
+</odoo>
